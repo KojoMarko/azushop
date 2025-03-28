@@ -4,7 +4,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="border-t py-8 bg-white">
+    <footer className="border-t py-2 bg-white">
       <div className="container px-4 mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Payment Methods */}
@@ -28,7 +28,7 @@ export function Footer() {
 
           {/* Copyright */}
           <div className="text-right">
-            <p className="text-xs text-gray-500">&copy; {currentYear} TechGadgets. All rights reserved.</p>
+            <p className="text-xs text-gray-500">&copy; {currentYear} Azushop. All rights reserved.</p>
             <p className="text-xs text-gray-400 mt-1">Privacy Policy | Terms of Service</p>
           </div>
         </div>
