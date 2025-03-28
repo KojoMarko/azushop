@@ -149,7 +149,7 @@ const defaultSlides: Slide[] = [
     ctaText: "Shop Smartphones",
     ctaLink: "/category/smartphones",
     ctaIcon: <Smartphone size={18} />,
-    image: "/smartphone.jpeg",
+    image: "/smartphone.png",
     bgColor: "#0f172a", // Dark blue
     imageStyle: "object-contain max-h-[600px] sm:max-h-[700px] md:max-h-[800px] rounded-lg", // Increased size
   },
