@@ -4,7 +4,6 @@ import Link from "next/link"
 import { ProductGallery } from "./ProductGallery"
 import { ProductInfo } from "./ProductInfo"
 import { ProductReviews } from "./ProductReviews"
-import { RelatedProducts } from "./RelatedProducts"
 
 interface Breadcrumb {
   label: string
@@ -18,15 +17,6 @@ interface Review {
   rating: number
   comment: string
   date: string
-}
-
-interface RelatedProduct {
-  id: number | string
-  name: string
-  brand: string
-  price: number
-  image: string
-  specs?: Record<string, string>
 }
 
 interface ProductDetailsProps {
@@ -43,14 +33,12 @@ interface ProductDetailsProps {
   }
   breadcrumbs: Breadcrumb[]
   reviews: Review[]
-  relatedProducts: RelatedProduct[]
 }
 
 export function ProductDetails({ 
   product, 
   breadcrumbs, 
-  reviews, 
-  relatedProducts 
+  reviews 
 }: ProductDetailsProps) {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -78,12 +66,6 @@ export function ProductDetails({
 
       {/* Tabs & Reviews */}
       <ProductReviews reviews={reviews} productId={product.id} />
-
-      {/* Related Products */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Related Products</h2>
-        <RelatedProducts products={relatedProducts} currentProductId={product.id} />
-      </div>
     </div>
   )
 }

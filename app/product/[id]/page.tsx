@@ -2,6 +2,7 @@
 
 import { ProductDetails } from "../../components/Product/ProductDetails"
 import { Metadata } from "next"
+import { RelatedProducts } from "../../components/Product/RelatedProducts"
 
 // Mock data - replace with your actual data fetching
 // This could be a database call, API request, etc.
@@ -123,7 +124,7 @@ const getProductReviews = async (productId: string): Promise<any[]> => {
 }
 
 // Mock related products
-const getRelatedProducts = async (productId: string, category?: string): Promise<any[]> => {
+const getRelatedProducts = async (productId: string): Promise<any[]> => {
   // All products in catalog
   const allProducts = [
     {
@@ -189,9 +190,7 @@ const getRelatedProducts = async (productId: string, category?: string): Promise
   ]
   
   // Filter out the current product and return up to 4 related products
-  return allProducts
-    .filter(p => p.id.toString() !== productId)
-    .slice(0, 4)
+  return allProducts.filter(p => p.id.toString() !== productId).slice(0, 4)
 }
 
 interface ProductPageProps {
@@ -237,15 +236,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
   
   const reviews = await getProductReviews(id)
   const relatedProducts = await getRelatedProducts(id)
-  
+
   return (
     <main>
       <ProductDetails
         product={product}
         breadcrumbs={breadcrumbs}
         reviews={reviews}
-        relatedProducts={relatedProducts}
       />
+      <section>
+        <h2 className="text-xl font-bold mb-4">Related Products</h2>
+        <RelatedProducts products={relatedProducts} currentProductId={product.id} />
+      </section>
     </main>
   )
 }
