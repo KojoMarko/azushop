@@ -59,11 +59,17 @@ export default function Navbar() {
       try {
         const cartItems = JSON.parse(localStorage.getItem("cart") || "[]")
         const favoriteItems = JSON.parse(localStorage.getItem("favorites") || "[]")
-        
-        setCartCount(cartItems.length)
-        setFavoriteCount(favoriteItems.length)
+
+        // Ensure cartItems and favoriteItems are arrays
+        const cartCount = Array.isArray(cartItems) ? cartItems.length : 0
+        const favoriteCount = Array.isArray(favoriteItems) ? favoriteItems.length : 0
+
+        setCartCount(cartCount)
+        setFavoriteCount(favoriteCount)
       } catch (error) {
         console.error("Error loading cart/favorites data:", error)
+        setCartCount(0)
+        setFavoriteCount(0)
       }
     }
   }, [])
