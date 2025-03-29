@@ -26,12 +26,12 @@ export default function FavouritePage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto">
       <FavouriteHeader
         title="Your Favourites"
         breadcrumbs={[
           { label: "Home", href: "/" },
-          { label: "Favourites", href: "/favourites", active: true },
+          { label: "Favourites", href: "/favourite", active: true },
         ]}
       />
 
