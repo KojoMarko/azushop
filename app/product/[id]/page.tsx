@@ -58,6 +58,22 @@ const getProductById = async (id: string): Promise<any> => {
       reviewCount: 2,
       inStock: false
     },
+    "5": {
+      id: 5,
+      name: "Lenovo ThinkPad X1 Carbon | 14\"",
+      brand: "Lenovo",
+      images: ["/placeholder.svg"],
+      specs: {
+        "RAM": "16 GB",
+        "Storage": "1 TB SSD",
+        "Screen": "14\" Full HD",
+        "Processor": "Intel Core i7"
+      },
+      price: 1399.99,
+      rating: 4.8,
+      reviewCount: 5,
+      inStock: true
+    },
     // Add more products as needed
   }
   

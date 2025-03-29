@@ -94,7 +94,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         </select>
 
         <Button
-          className="w-full bg-blue-600 hover:bg-blue-700"
+          className="max-w-xs bg-blue-600 hover:bg-blue-700"
           onClick={handleAddToCart}
           disabled={!product.inStock}
         >
