@@ -238,16 +238,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const relatedProducts = await getRelatedProducts(id)
 
   return (
-    <main>
+    <main className="container mx-auto px-4 py-8">
       <ProductDetails
         product={product}
         breadcrumbs={breadcrumbs}
         reviews={reviews}
       />
-      <section>
-        <h2 className="text-xl font-bold mb-4">Related Products</h2>
+      <div className="mt-12">
+        <h2 className="text-xl font-bold mb-6">Related Products</h2>
         <RelatedProducts products={relatedProducts} currentProductId={product.id} />
-      </section>
+      </div>
     </main>
   )
 }
