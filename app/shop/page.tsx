@@ -5,6 +5,7 @@ import { NewArrivalsHeader } from "../components/Shop/NewArrivalsHeader"
 import { ProductFilterSidebar } from "../components/Shop/ProductFilterSidebar"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
+import { ShoppingCart, Heart, Eye } from "lucide-react"
 
 // Define filter types for better type safety
 type PriceRange = {
@@ -157,19 +158,45 @@ export default function ShopPage() {
           )}
 
           {/* Product grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+                className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col items-center relative"
               >
-                <div className="aspect-square bg-gray-100 rounded-md mb-3 flex items-center justify-center">
-                  Product Image
+                {/* Brand at the top */}
+                <div className="absolute top-2 left-2 bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                  {product.brand}
                 </div>
-                <h3 className="font-medium">{product.name}</h3>
-                <div className="text-sm text-muted-foreground">{product.brand}</div>
-                <div className="text-sm text-muted-foreground">{product.category}</div>
-                <div className="mt-2 font-semibold">${product.price}</div>
+
+                {/* Product image */}
+                <div className="aspect-square bg-gray-100 rounded-md mb-3 flex items-center justify-center w-full">
+                  <img
+                    src="/placeholder.svg" // Replace with actual product image URL
+                    alt={product.name}
+                    className="object-contain h-32"
+                  />
+                </div>
+
+                {/* Product details */}
+                <h3 className="font-medium text-center text-sm md:text-base">{product.name}</h3>
+                <p className="text-xs md:text-sm text-muted-foreground text-center mb-2">
+                  8GB | 128 GB | Dual-SIM | Phantom Black
+                </p>
+                <div className="mt-2 font-semibold text-center text-sm md:text-base text-blue-600">${product.price}</div>
+
+                {/* Action icons */}
+                <div className="flex justify-center gap-4 mt-3">
+                  <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                    <ShoppingCart className="w-5 h-5" />
+                  </button>
+                  <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                    <Heart className="w-5 h-5" />
+                  </button>
+                  <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                    <Eye className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             ))}
 

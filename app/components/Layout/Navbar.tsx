@@ -8,9 +8,11 @@ import Link from "next/link"
 import { Heart, Home, LogIn, ShoppingBag, ShoppingCart, User, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { usePathname } from "next/navigation"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background">
@@ -109,11 +111,17 @@ interface NavLinkProps {
 }
 
 function NavLink({ href, icon, label }: NavLinkProps) {
-  const validIcon = React.cloneElement(icon, { className: "mr-2 h-6 w-6" });
+  const pathname = usePathname();
+  const isActive = pathname === href;
 
   return (
-    <Link href={href} className="flex items-center text-lg font-medium transition-colors hover:text-primary">
-      {validIcon}
+    <Link
+      href={href}
+      className={`flex items-center text-lg font-medium transition-colors hover:text-primary ${
+        isActive ? "text-blue-600 underline" : ""
+      }`}
+    >
+      {React.cloneElement(icon, { className: "mr-2 h-6 w-6" })}
       {label}
     </Link>
   );
