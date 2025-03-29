@@ -6,6 +6,7 @@ import { ProductFilterSidebar } from "../components/Shop/ProductFilterSidebar"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
 import { ShoppingCart, Heart, Eye } from "lucide-react"
+import { useRouter } from 'next/navigation';
 
 // Define filter types for better type safety
 type PriceRange = {
@@ -29,14 +30,7 @@ type Product = {
 }
 
 export default function ShopPage() {
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
-    categories: [],
-    brands: [],
-    priceRange: { min: null, max: null },
-  })
-
-  // Mock product data - in a real app, this would likely come from an API
+  // Define the products variable at the very top
   const products: Product[] = useMemo(() => 
     Array.from({ length: 12 }).map((_, i) => ({
       id: i + 1,
@@ -46,62 +40,97 @@ export default function ShopPage() {
       category: ["Laptops", "Phones", "Cameras", "Accessories"][Math.floor(Math.random() * 4)],
     })), 
     []
-  )
+  );
 
+  const router = useRouter();
+  const [cart, setCart] = useState<Product[]>([]);
+  const [favorites, setFavorites] = useState<Product[]>([]);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+    categories: [],
+    brands: [],
+    priceRange: { min: null, max: null },
+  })
+  const [clickedCartIds, setClickedCartIds] = useState<number[]>([]);
+  const [clickedFavoriteIds, setClickedFavoriteIds] = useState<number[]>([]);
+
+  const addToCart = (product: Product) => {
+    setCart((prevCart) => [...prevCart, product]);
+    setClickedCartIds((prev) => [...prev, product.id]);
+    localStorage.setItem("cart", JSON.stringify([...cart, product]));
+    console.log(`${product.name} added to cart.`);
+  };
+
+  const addToFavorites = (product: Product) => {
+    setFavorites((prevFavorites) => [...prevFavorites, product]);
+    setClickedFavoriteIds((prev) => [...prev, product.id]);
+    localStorage.setItem("favorites", JSON.stringify([...favorites, product]));
+    console.log(`${product.name} added to favorites.`);
+  };
+
+  const viewProduct = (productId: number) => {
+    router.push(`/product/${productId}`);
+  };
+
+  // Define handleFilterChange function
   const handleFilterChange = (filters: ActiveFilters) => {
-    console.log("Filters applied:", filters)
-    setActiveFilters(filters)
-  }
+    console.log("Filters applied:", filters);
+    setActiveFilters(filters);
+  };
 
-  // Filter products based on active filters - use useMemo for performance
+  // Define hasActiveFilters variable
+  const hasActiveFilters = useMemo(() => {
+    return (
+      activeFilters.categories.length > 0 ||
+      activeFilters.brands.length > 0 ||
+      activeFilters.priceRange.min !== null ||
+      activeFilters.priceRange.max !== null
+    );
+  }, [activeFilters]);
+
+  // Define filteredProducts variable
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       // Filter by category
       if (
         activeFilters.categories.length > 0 &&
-        !activeFilters.categories.some((cat) => 
+        !activeFilters.categories.some((cat) =>
           product.category.toLowerCase().includes(cat.toLowerCase())
         )
       ) {
-        return false
+        return false;
       }
 
       // Filter by brand
       if (
         activeFilters.brands.length > 0 &&
-        !activeFilters.brands.some((brand) => 
+        !activeFilters.brands.some((brand) =>
           product.brand.toLowerCase().includes(brand.toLowerCase())
         )
       ) {
-        return false
+        return false;
       }
 
       // Filter by price
       if (activeFilters.priceRange.min !== null && product.price < activeFilters.priceRange.min) {
-        return false
+        return false;
       }
       if (activeFilters.priceRange.max !== null && product.price > activeFilters.priceRange.max) {
-        return false
+        return false;
       }
 
-      return true
-    })
-  }, [products, activeFilters])
+      return true;
+    });
+  }, [products, activeFilters]);
 
+  // Define resetFilters function
   const resetFilters = () => {
     setActiveFilters({
       categories: [],
       brands: [],
       priceRange: { min: null, max: null },
-    })
-  }
-
-  // Check if any filters are active
-  const hasActiveFilters = 
-    activeFilters.categories.length > 0 ||
-    activeFilters.brands.length > 0 ||
-    activeFilters.priceRange.min !== null ||
-    activeFilters.priceRange.max !== null
+    });
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -187,13 +216,26 @@ export default function ShopPage() {
 
                 {/* Action icons */}
                 <div className="flex justify-center gap-4 mt-3">
-                  <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                  <button
+                    className={`p-2 rounded-full hover:bg-gray-200 ${
+                      clickedCartIds.includes(product.id) ? "bg-green-500" : "bg-gray-100"
+                    }`}
+                    onClick={() => addToCart(product)}
+                  >
                     <ShoppingCart className="w-5 h-5" />
                   </button>
-                  <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                  <button
+                    className={`p-2 rounded-full hover:bg-gray-200 ${
+                      clickedFavoriteIds.includes(product.id) ? "bg-red-500" : "bg-gray-100"
+                    }`}
+                    onClick={() => addToFavorites(product)}
+                  >
                     <Heart className="w-5 h-5" />
                   </button>
-                  <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                  <button
+                    className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                    onClick={() => viewProduct(product.id)}
+                  >
                     <Eye className="w-5 h-5" />
                   </button>
                 </div>

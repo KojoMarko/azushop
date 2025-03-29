@@ -1,46 +1,120 @@
 "use client"
 
-import React from "react"
-
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, Home, LogIn, ShoppingBag, ShoppingCart, User, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Badge } from "@/components/ui/badge"
 import { usePathname } from "next/navigation"
+
+// Nav Link Component (works for both desktop and mobile)
+interface NavLinkProps {
+  href: string
+  icon: React.ReactElement<{ className?: string }>
+  label: string
+  count?: number
+  isMobile?: boolean
+  onClick?: () => void
+}
+
+function NavLink({ href, icon, label, count, isMobile = false, onClick }: NavLinkProps) {
+  const pathname = usePathname()
+  const isActive = pathname === href
+
+  const IconElement = React.isValidElement(icon)
+    ? React.cloneElement(icon, {
+        className: `${isMobile ? "mr-2" : "mr-2"} h-5 w-5`,
+      })
+    : null
+
+  return (
+    <Link
+      href={href}
+      className={`flex items-center text-lg transition-colors hover:text-primary ${
+        isActive ? "text-blue-600 font-medium" : ""
+      } ${isMobile ? "py-3" : ""}`}
+      onClick={onClick}
+    >
+      {IconElement}
+      <span>{label}</span>
+      {count !== undefined && count > 0 && (
+        <Badge variant="secondary" className="ml-2 px-2 py-0">
+          {count}
+        </Badge>
+      )}
+    </Link>
+  )
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
+  const [cartCount, setCartCount] = useState(0)
+  const [favoriteCount, setFavoriteCount] = useState(0)
+
+  useEffect(() => {
+    // Safe localStorage access (only in browser)
+    if (typeof window !== "undefined") {
+      try {
+        const cartItems = JSON.parse(localStorage.getItem("cart") || "[]")
+        const favoriteItems = JSON.parse(localStorage.getItem("favorites") || "[]")
+        
+        setCartCount(cartItems.length)
+        setFavoriteCount(favoriteItems.length)
+      } catch (error) {
+        console.error("Error loading cart/favorites data:", error)
+      }
+    }
+  }, [])
+
+  const closeMenu = () => setIsOpen(false)
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo - Left Side */}
+        {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src="/azushop.svg" alt="Logo" width={200} height={200} className="h-40 w-40" />
+          <Image src="/azushop.svg" alt="Logo" width={150} height={150} />
         </Link>
 
-        {/* Navigation Links - Middle (hidden on mobile) */}
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-center space-x-6">
-          <NavLink href="/" icon={<Home className="h-6 w-6" />} label="Home" />
-          <NavLink href="/shop" icon={<ShoppingBag className="h-6 w-6" />} label="Shop" />
-          <NavLink href="/cart" icon={<ShoppingCart className="h-6 w-6" />} label="Cart" />
-          <NavLink href="/favourite" icon={<Heart className="h-6 w-6" />} label="Favourite" />
+          <NavLink 
+            href="/" 
+            icon={<Home />} 
+            label="Home" 
+          />
+          <NavLink 
+            href="/shop" 
+            icon={<ShoppingBag />} 
+            label="Shop" 
+          />
+          <NavLink 
+            href="/cart" 
+            icon={<ShoppingCart />} 
+            label="Cart" 
+            count={cartCount}
+          />
+          <NavLink 
+            href="/favourite" 
+            icon={<Heart />} 
+            label="Favourite" 
+            count={favoriteCount}
+          />
         </div>
 
-        {/* Auth Links - Right Side (hidden on mobile) */}
+        {/* Desktop Auth Links */}
         <div className="hidden md:flex items-center space-x-2">
-          <Button variant="ghost" size="lg" className="flex items-center space-x-2" asChild>
-            <Link href="/login" className="flex items-center text-lg font-medium">
-              <LogIn className="h-6 w-6" />
+          <Button variant="ghost" size="sm" className="flex items-center gap-2" asChild>
+            <Link href="/login">
+              <LogIn className="h-4 w-4" />
               <span>Login</span>
             </Link>
           </Button>
-          <Button variant="ghost" size="lg" className="flex items-center space-x-2" asChild>
-            <Link href="/register" className="flex items-center text-lg font-medium">
-              <User className="h-6 w-6" />
+          <Button variant="outline" size="sm" className="flex items-center gap-2" asChild>
+            <Link href="/register">
+              <User className="h-4 w-4" />
               <span>Register</span>
             </Link>
           </Button>
@@ -49,50 +123,57 @@ export default function Navbar() {
         {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" aria-label="Open menu">
               <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right">
-            <div className="flex flex-col space-y-4 py-4">
-              <MobileNavLink
+          <SheetContent side="right" className="w-[260px] sm:w-[300px]">
+            <div className="flex flex-col space-y-2 py-4">
+              <NavLink
                 href="/"
-                icon={<Home className="mr-2 h-6 w-6" />}
+                icon={<Home />}
                 label="Home"
-                onClick={() => setIsOpen(false)}
+                isMobile
+                onClick={closeMenu}
               />
-              <MobileNavLink
+              <NavLink
                 href="/shop"
-                icon={<ShoppingBag className="mr-2 h-6 w-6" />}
+                icon={<ShoppingBag />}
                 label="Shop"
-                onClick={() => setIsOpen(false)}
+                isMobile
+                onClick={closeMenu}
               />
-              <MobileNavLink
+              <NavLink
                 href="/cart"
-                icon={<ShoppingCart className="mr-2 h-6 w-6" />}
+                icon={<ShoppingCart />}
                 label="Cart"
-                onClick={() => setIsOpen(false)}
+                count={cartCount}
+                isMobile
+                onClick={closeMenu}
               />
-              <MobileNavLink
+              <NavLink
                 href="/favourite"
-                icon={<Heart className="mr-2 h-6 w-6" />}
+                icon={<Heart />}
                 label="Favourite"
-                onClick={() => setIsOpen(false)}
+                count={favoriteCount}
+                isMobile
+                onClick={closeMenu}
               />
 
               <div className="border-t pt-4 mt-4">
-                <MobileNavLink
+                <NavLink
                   href="/login"
-                  icon={<LogIn className="mr-2 h-6 w-6" />}
+                  icon={<LogIn />}
                   label="Login"
-                  onClick={() => setIsOpen(false)}
+                  isMobile
+                  onClick={closeMenu}
                 />
-                <MobileNavLink
+                <NavLink
                   href="/register"
-                  icon={<User className="mr-2 h-6 w-6" />}
+                  icon={<User />}
                   label="Register"
-                  onClick={() => setIsOpen(false)}
+                  isMobile
+                  onClick={closeMenu}
                 />
               </div>
             </div>
@@ -102,48 +183,3 @@ export default function Navbar() {
     </nav>
   )
 }
-
-// Desktop Navigation Link
-interface NavLinkProps {
-  href: string;
-  icon: React.ReactElement<{ className?: string }>;
-  label: string;
-}
-
-function NavLink({ href, icon, label }: NavLinkProps) {
-  const pathname = usePathname();
-  const isActive = pathname === href;
-
-  return (
-    <Link
-      href={href}
-      className={`flex items-center text-lg font-medium transition-colors hover:text-primary ${
-        isActive ? "text-blue-600 underline" : ""
-      }`}
-    >
-      {React.cloneElement(icon, { className: "mr-2 h-6 w-6" })}
-      {label}
-    </Link>
-  );
-}
-
-// Mobile Navigation Link
-interface MobileNavLinkProps extends NavLinkProps {
-  onClick: () => void;
-}
-
-function MobileNavLink({ href, icon, label, onClick }: MobileNavLinkProps) {
-  const validIcon = React.cloneElement(icon, { className: "mr-2 h-6 w-6" });
-
-  return (
-    <Link
-      href={href}
-      className="flex items-center py-3 text-lg font-medium transition-colors hover:text-primary"
-      onClick={onClick}
-    >
-      {validIcon}
-      {label}
-    </Link>
-  );
-}
-
