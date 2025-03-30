@@ -4,9 +4,40 @@ import { ProductDetails } from "../../components/Product/ProductDetails"
 import { Metadata } from "next"
 import { RelatedProducts } from "../../components/Product/RelatedProducts"
 
+// Define types for product, reviews, and related products
+interface Product {
+  id: number;
+  name: string;
+  brand: string;
+  images: string[];
+  specs: Record<string, string>;
+  price: number;
+  rating: number;
+  reviewCount: number;
+  inStock: boolean;
+}
+
+interface Review {
+  id: string;
+  author: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+interface RelatedProduct {
+  id: number;
+  name: string;
+  brand: string;
+  image: string;
+  specs: Record<string, string>;
+  price: number;
+  category: string;
+}
+
 // Mock data - replace with your actual data fetching
 // This could be a database call, API request, etc.
-const getProductById = async (id: string): Promise<any> => {
+const getProductById = async (id: string): Promise<Product | null> => {
   // Simulating API delay
   await new Promise(resolve => setTimeout(resolve, 100))
   
@@ -82,7 +113,7 @@ const getProductById = async (id: string): Promise<any> => {
 }
 
 // Mock reviews data
-const getProductReviews = async (productId: string): Promise<any[]> => {
+const getProductReviews = async (productId: string): Promise<Review[]> => {
   const allReviews = {
     "1": [
       {
@@ -124,7 +155,7 @@ const getProductReviews = async (productId: string): Promise<any[]> => {
 }
 
 // Mock related products
-const getRelatedProducts = async (productId: string): Promise<any[]> => {
+const getRelatedProducts = async (productId: string): Promise<RelatedProduct[]> => {
   // All products in catalog
   const allProducts = [
     {
@@ -135,6 +166,8 @@ const getRelatedProducts = async (productId: string): Promise<any[]> => {
       specs: {
         "RAM": "16.0 GB",
         "Memory": "512 GB",
+        "Storage": "",
+        "HDD": ""
       },
       price: 749.99,
       category: "laptop"
@@ -147,6 +180,8 @@ const getRelatedProducts = async (productId: string): Promise<any[]> => {
       specs: {
         "RAM": "16.0 GB",
         "Memory": "512 GB",
+        "Storage": "",
+        "HDD": ""
       },
       price: 949.99,
       category: "laptop"
@@ -158,7 +193,9 @@ const getRelatedProducts = async (productId: string): Promise<any[]> => {
       image: "/placeholder.svg",
       specs: {
         "RAM": "8 GB",
-        "Storage": "128 GB SSD",
+        "Memory": "128 GB SSD",
+        "Storage": "",
+        "HDD": ""
       },
       price: 549.99,
       category: "laptop"
@@ -170,7 +207,9 @@ const getRelatedProducts = async (productId: string): Promise<any[]> => {
       image: "/placeholder.svg",
       specs: {
         "RAM": "16 GB",
-        "Storage": "512 GB SSD",
+        "Memory": "512 GB SSD",
+        "Storage": "",
+        "HDD": ""
       },
       price: 1249.99,
       category: "laptop"
@@ -182,13 +221,15 @@ const getRelatedProducts = async (productId: string): Promise<any[]> => {
       image: "/placeholder.svg",
       specs: {
         "RAM": "16 GB",
-        "Storage": "1 TB SSD",
+        "Memory": "1 TB SSD",
+        "Storage": "",
+        "HDD": ""
       },
       price: 1399.99,
       category: "laptop"
     },
   ]
-  
+
   // Filter out the current product and return up to 4 related products
   return allProducts.filter(p => p.id.toString() !== productId).slice(0, 4)
 }
@@ -223,7 +264,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return (
       <div className="container mx-auto px-4 py-24 text-center">
         <h1 className="text-2xl font-bold">Product Not Found</h1>
-        <p className="mt-4">The product you're looking for doesn't exist or has been removed.</p>
+        <p className="mt-4">The product you&apos;re looking for doesn&apos;t exist or has been removed.</p>
       </div>
     )
   }
