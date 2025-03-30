@@ -35,6 +35,14 @@ interface RelatedProduct {
   category: string
 }
 
+// Correct type definition for page props in App Router
+interface ProductPageProps {
+  params: {
+    id: string
+  }
+  searchParams?: Record<string, string | string[] | undefined>
+}
+
 // Mock data - replace with your actual data fetching
 // This could be a database call, API request, etc.
 const getProductById = async (id: string): Promise<Product | null> => {
@@ -234,12 +242,7 @@ const getRelatedProducts = async (productId: string): Promise<RelatedProduct[]> 
   return allProducts.filter((p) => p.id.toString() !== productId).slice(0, 4)
 }
 
-interface ProductPageProps {
-  params: {
-    id: string
-  }
-}
-
+// Correct type for generateMetadata
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const product = await getProductById(params.id)
 
@@ -255,6 +258,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 }
 
+// Correct type for the page component
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = params
   const product = await getProductById(id)
