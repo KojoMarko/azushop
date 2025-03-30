@@ -6,15 +6,17 @@ import { ProductFilterSidebar } from "../components/Shop/ProductFilterSidebar"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
 import { ShoppingCart, Heart, Eye } from "lucide-react"
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 // Define filter types for better type safety
-type PriceRange = {
-  min: number | null
-  max: number | null
+// Make sure this matches the interface in ProductFilterSidebar.tsx
+interface PriceRange {
+  min: string | number | null
+  max: string | number | null
 }
 
-type ActiveFilters = {
+interface Filters {
   categories: string[]
   brands: string[]
   priceRange: PriceRange
@@ -31,52 +33,53 @@ type Product = {
 
 export default function ShopPage() {
   // Define the products variable at the very top
-  const products: Product[] = useMemo(() => 
-    Array.from({ length: 12 }).map((_, i) => ({
-      id: i + 1,
-      name: `Product ${i + 1}`,
-      price: Math.floor(Math.random() * 1000) + 100,
-      brand: ["Apple", "Samsung", "Sony", "Lenovo"][Math.floor(Math.random() * 4)],
-      category: ["Laptops", "Phones", "Cameras", "Accessories"][Math.floor(Math.random() * 4)],
-    })), 
-    []
-  );
+  const products: Product[] = useMemo(
+    () =>
+      Array.from({ length: 12 }).map((_, i) => ({
+        id: i + 1,
+        name: `Product ${i + 1}`,
+        price: Math.floor(Math.random() * 1000) + 100,
+        brand: ["Apple", "Samsung", "Sony", "Lenovo"][Math.floor(Math.random() * 4)],
+        category: ["Laptops", "Phones", "Cameras", "Accessories"][Math.floor(Math.random() * 4)],
+      })),
+    [],
+  )
 
-  const router = useRouter();
-  const [cart, setCart] = useState<Product[]>([]);
-  const [favorites, setFavorites] = useState<Product[]>([]);
+  const router = useRouter()
+  const [cart, setCart] = useState<Product[]>([])
+  const [favorites, setFavorites] = useState<Product[]>([])
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+  const [activeFilters, setActiveFilters] = useState<Filters>({
     categories: [],
     brands: [],
     priceRange: { min: null, max: null },
   })
-  const [clickedCartIds, setClickedCartIds] = useState<number[]>([]);
-  const [clickedFavoriteIds, setClickedFavoriteIds] = useState<number[]>([]);
+  const [clickedCartIds, setClickedCartIds] = useState<number[]>([])
+  const [clickedFavoriteIds, setClickedFavoriteIds] = useState<number[]>([])
 
   const addToCart = (product: Product) => {
-    setCart((prevCart) => [...prevCart, product]);
-    setClickedCartIds((prev) => [...prev, product.id]);
-    localStorage.setItem("cart", JSON.stringify([...cart, product]));
-    console.log(`${product.name} added to cart.`);
-  };
+    setCart((prevCart) => [...prevCart, product])
+    setClickedCartIds((prev) => [...prev, product.id])
+    localStorage.setItem("cart", JSON.stringify([...cart, product]))
+    console.log(`${product.name} added to cart.`)
+  }
 
   const addToFavorites = (product: Product) => {
-    setFavorites((prevFavorites) => [...prevFavorites, product]);
-    setClickedFavoriteIds((prev) => [...prev, product.id]);
-    localStorage.setItem("favorites", JSON.stringify([...favorites, product]));
-    console.log(`${product.name} added to favorites.`);
-  };
+    setFavorites((prevFavorites) => [...prevFavorites, product])
+    setClickedFavoriteIds((prev) => [...prev, product.id])
+    localStorage.setItem("favorites", JSON.stringify([...favorites, product]))
+    console.log(`${product.name} added to favorites.`)
+  }
 
   const viewProduct = (productId: number) => {
-    router.push(`/product/${productId}`);
-  };
+    router.push(`/product/${productId}`)
+  }
 
   // Define handleFilterChange function
-  const handleFilterChange = (filters: ActiveFilters) => {
-    console.log("Filters applied:", filters);
-    setActiveFilters(filters);
-  };
+  const handleFilterChange = (filters: Filters) => {
+    console.log("Filters applied:", filters)
+    setActiveFilters(filters)
+  }
 
   // Define hasActiveFilters variable
   const hasActiveFilters = useMemo(() => {
@@ -85,8 +88,8 @@ export default function ShopPage() {
       activeFilters.brands.length > 0 ||
       activeFilters.priceRange.min !== null ||
       activeFilters.priceRange.max !== null
-    );
-  }, [activeFilters]);
+    )
+  }, [activeFilters])
 
   // Define filteredProducts variable
   const filteredProducts = useMemo(() => {
@@ -94,34 +97,44 @@ export default function ShopPage() {
       // Filter by category
       if (
         activeFilters.categories.length > 0 &&
-        !activeFilters.categories.some((cat) =>
-          product.category.toLowerCase().includes(cat.toLowerCase())
-        )
+        !activeFilters.categories.some((cat) => product.category.toLowerCase().includes(cat.toLowerCase()))
       ) {
-        return false;
+        return false
       }
 
       // Filter by brand
       if (
         activeFilters.brands.length > 0 &&
-        !activeFilters.brands.some((brand) =>
-          product.brand.toLowerCase().includes(brand.toLowerCase())
-        )
+        !activeFilters.brands.some((brand) => product.brand.toLowerCase().includes(brand.toLowerCase()))
       ) {
-        return false;
+        return false
       }
 
       // Filter by price
-      if (activeFilters.priceRange.min !== null && product.price < activeFilters.priceRange.min) {
-        return false;
+      const minPrice =
+        activeFilters.priceRange.min !== null
+          ? typeof activeFilters.priceRange.min === "string"
+            ? Number.parseFloat(activeFilters.priceRange.min)
+            : activeFilters.priceRange.min
+          : null
+
+      const maxPrice =
+        activeFilters.priceRange.max !== null
+          ? typeof activeFilters.priceRange.max === "string"
+            ? Number.parseFloat(activeFilters.priceRange.max)
+            : activeFilters.priceRange.max
+          : null
+
+      if (minPrice !== null && product.price < minPrice) {
+        return false
       }
-      if (activeFilters.priceRange.max !== null && product.price > activeFilters.priceRange.max) {
-        return false;
+      if (maxPrice !== null && product.price > maxPrice) {
+        return false
       }
 
-      return true;
-    });
-  }, [products, activeFilters]);
+      return true
+    })
+  }, [products, activeFilters])
 
   // Define resetFilters function
   const resetFilters = () => {
@@ -129,13 +142,13 @@ export default function ShopPage() {
       categories: [],
       brands: [],
       priceRange: { min: null, max: null },
-    });
-  };
+    })
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       <NewArrivalsHeader />
-      
+
       <div className="flex flex-1">
         {/* Sidebar */}
         <ProductFilterSidebar onFilterChange={handleFilterChange} />
@@ -200,10 +213,12 @@ export default function ShopPage() {
 
                 {/* Product image */}
                 <div className="aspect-square bg-gray-100 rounded-md mb-3 flex items-center justify-center w-full">
-                  <img
+                  <Image
                     src="/placeholder.svg" // Replace with actual product image URL
                     alt={product.name}
-                    className="object-contain h-32"
+                    className="object-contain"
+                    width={128}
+                    height={128}
                   />
                 </div>
 
@@ -212,7 +227,9 @@ export default function ShopPage() {
                 <p className="text-xs md:text-sm text-muted-foreground text-center mb-2">
                   8GB | 128 GB | Dual-SIM | Phantom Black
                 </p>
-                <div className="mt-2 font-semibold text-center text-sm md:text-base text-blue-600">${product.price}</div>
+                <div className="mt-2 font-semibold text-center text-sm md:text-base text-blue-600">
+                  ${product.price}
+                </div>
 
                 {/* Action icons */}
                 <div className="flex justify-center gap-4 mt-3">
@@ -245,10 +262,7 @@ export default function ShopPage() {
             {filteredProducts.length === 0 && (
               <div className="col-span-full py-12 text-center">
                 <p className="text-muted-foreground">No products match your filter criteria.</p>
-                <Button
-                  variant="link"
-                  onClick={resetFilters}
-                >
+                <Button variant="link" onClick={resetFilters}>
                   Clear all filters
                 </Button>
               </div>
@@ -259,3 +273,4 @@ export default function ShopPage() {
     </div>
   )
 }
+

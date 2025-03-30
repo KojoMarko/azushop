@@ -3,9 +3,6 @@
 import { useState } from "react"
 import { CartHeader } from "../components/Cart/CartHeader"
 import { ShoppingCart } from "lucide-react"
-
-// Import our improved components
-// (These would be defined in their respective files)
 import { CartItemTable } from "../components/Cart/CartItemTable"
 import { CartSummary } from "../components/Cart/CartSummary"
 
@@ -76,7 +73,7 @@ export default function CartPage() {
           <div className="lg:flex lg:gap-8">
             {/* Cart Items Table - Using the CartItemTable component */}
             <div className="lg:flex-grow">
-              <CartItemTable 
+              <CartItemTable
                 items={cartItems}
                 onQuantityChange={handleQuantityChange}
                 onRemoveItem={handleRemoveItem}
@@ -97,7 +94,9 @@ export default function CartPage() {
               <ShoppingCart className="h-8 w-8 text-blue-600" />
             </div>
             <h2 className="text-2xl font-semibold mb-2">Your cart is empty</h2>
-            <p className="text-muted-foreground mb-6">Looks like you haven't added any products to your cart yet.</p>
+            <p className="text-muted-foreground mb-6">
+              Looks like you haven&apos;t added any products to your cart yet.
+            </p>
             <a
               href="/shop"
               className="inline-flex bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium"
@@ -110,3 +109,4 @@ export default function CartPage() {
     </main>
   )
 }
+

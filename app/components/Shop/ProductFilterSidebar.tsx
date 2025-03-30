@@ -20,9 +20,20 @@ interface Brand {
   name: string
 }
 
+interface PriceRange {
+  min: string | number | null
+  max: string | number | null
+}
+
+interface Filters {
+  categories: string[]
+  brands: string[]
+  priceRange: PriceRange
+}
+
 interface ProductFilterSidebarProps {
   className?: string
-  onFilterChange?: (filters: any) => void
+  onFilterChange?: (filters: Filters) => void
 }
 
 export function ProductFilterSidebar({ className, onFilterChange }: ProductFilterSidebarProps) {
@@ -92,7 +103,7 @@ export function ProductFilterSidebar({ className, onFilterChange }: ProductFilte
 
   // Apply filters
   const applyFilters = () => {
-    const filters = {
+    const filters: Filters = {
       categories: selectedCategories,
       brands: selectedBrands,
       priceRange: {
