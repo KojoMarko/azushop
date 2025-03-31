@@ -201,9 +201,9 @@ export default function ShopPage() {
 
           {/* Product grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product, index) => (
               <div
-                key={product.id}
+                key={`${product.id}-${index}`}
                 className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col items-center relative"
               >
                 {/* Brand at the top */}
