@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import { usePathname } from "next/navigation"
+import { LoginDialog } from "../Auth/LoginDialog"
+import { RegisterDialog } from "../Auth/RegisterDialog"
 
 // Nav Link Component (works for both desktop and mobile)
 interface NavLinkProps {
@@ -52,6 +54,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [favoriteCount, setFavoriteCount] = useState(0)
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const [registerDialogOpen, setRegisterDialogOpen] = useState(false)
 
   useEffect(() => {
     // Safe localStorage access (only in browser)
@@ -76,6 +80,17 @@ export default function Navbar() {
 
   const closeMenu = () => setIsOpen(false)
 
+  // Handle switching between login and register dialogs
+  const openLoginDialog = () => {
+    setRegisterDialogOpen(false)
+    setLoginDialogOpen(true)
+  }
+
+  const openRegisterDialog = () => {
+    setLoginDialogOpen(false)
+    setRegisterDialogOpen(true)
+  }
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -86,43 +101,34 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-center space-x-6">
-          <NavLink 
-            href="/" 
-            icon={<Home />} 
-            label="Home" 
-          />
-          <NavLink 
-            href="/shop" 
-            icon={<ShoppingBag />} 
-            label="Shop" 
-          />
-          <NavLink 
-            href="/cart" 
-            icon={<ShoppingCart />} 
-            label="Cart" 
-            count={cartCount}
-          />
-          <NavLink 
-            href="/favourite" 
-            icon={<Heart />} 
-            label="Favourite" 
-            count={favoriteCount}
-          />
+          <NavLink href="/" icon={<Home />} label="Home" />
+          <NavLink href="/shop" icon={<ShoppingBag />} label="Shop" />
+          <NavLink href="/cart" icon={<ShoppingCart />} label="Cart" count={cartCount} />
+          <NavLink href="/favourite" icon={<Heart />} label="Favourite" count={favoriteCount} />
         </div>
 
         {/* Desktop Auth Links */}
         <div className="hidden md:flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2" asChild>
-            <Link href="/login">
-              <LogIn className="h-4 w-4" />
-              <span>Login</span>
-            </Link>
+          {/* Login button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => setLoginDialogOpen(true)}
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Login</span>
           </Button>
-          <Button variant="outline" size="sm" className="flex items-center gap-2" asChild>
-            <Link href="/register">
-              <User className="h-4 w-4" />
-              <span>Register</span>
-            </Link>
+
+          {/* Register button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => setRegisterDialogOpen(true)}
+          >
+            <User className="h-4 w-4" />
+            <span>Register</span>
           </Button>
         </div>
 
@@ -135,20 +141,8 @@ export default function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-[260px] sm:w-[300px]">
             <div className="flex flex-col space-y-2 py-4">
-              <NavLink
-                href="/"
-                icon={<Home />}
-                label="Home"
-                isMobile
-                onClick={closeMenu}
-              />
-              <NavLink
-                href="/shop"
-                icon={<ShoppingBag />}
-                label="Shop"
-                isMobile
-                onClick={closeMenu}
-              />
+              <NavLink href="/" icon={<Home />} label="Home" isMobile onClick={closeMenu} />
+              <NavLink href="/shop" icon={<ShoppingBag />} label="Shop" isMobile onClick={closeMenu} />
               <NavLink
                 href="/cart"
                 icon={<ShoppingCart />}
@@ -167,25 +161,41 @@ export default function Navbar() {
               />
 
               <div className="border-t pt-4 mt-4">
-                <NavLink
-                  href="/login"
-                  icon={<LogIn />}
-                  label="Login"
-                  isMobile
-                  onClick={closeMenu}
-                />
-                <NavLink
-                  href="/register"
-                  icon={<User />}
-                  label="Register"
-                  isMobile
-                  onClick={closeMenu}
-                />
+                {/* Login button */}
+                <button
+                  className="flex items-center py-3 text-lg transition-colors hover:text-primary"
+                  onClick={() => {
+                    closeMenu()
+                    setLoginDialogOpen(true)
+                  }}
+                >
+                  <LogIn className="mr-2 h-5 w-5" />
+                  <span>Login</span>
+                </button>
+
+                {/* Register button */}
+                <button
+                  className="flex items-center py-3 text-lg transition-colors hover:text-primary"
+                  onClick={() => {
+                    closeMenu()
+                    setRegisterDialogOpen(true)
+                  }}
+                >
+                  <User className="mr-2 h-5 w-5" />
+                  <span>Register</span>
+                </button>
               </div>
             </div>
           </SheetContent>
         </Sheet>
       </div>
+
+      {/* Login Dialog */}
+      <LoginDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} onRegisterClick={openRegisterDialog} />
+
+      {/* Register Dialog */}
+      <RegisterDialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen} onLoginClick={openLoginDialog} />
     </nav>
   )
 }
+
