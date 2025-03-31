@@ -138,7 +138,7 @@ export function ProductFilterSidebar({ className, onFilterChange }: ProductFilte
 
   // Render category item with potential subcategories
   const renderCategoryItem = (category: Category, depth = 0) => (
-    <div key={category.id} className={cn("py-1", depth > 0 && "ml-4")}>
+    <div key={`${category.id}-${depth}`} className={cn("py-1", depth > 0 && "ml-4")}>
       <div className="flex items-center space-x-2">
         <Checkbox
           id={`category-${category.id}`}
@@ -213,8 +213,8 @@ export function ProductFilterSidebar({ className, onFilterChange }: ProductFilte
                       />
                     </div>
                     <div className="space-y-1 max-h-40 overflow-y-auto">
-                      {filteredBrands.map((brand) => (
-                        <div key={brand.id} className="flex items-center space-x-2">
+                      {filteredBrands.map((brand, index) => (
+                        <div key={`${brand.id}-${index}`} className="flex items-center space-x-2">
                           <Checkbox
                             id={`brand-${brand.id}`}
                             checked={selectedBrands.includes(brand.id)}

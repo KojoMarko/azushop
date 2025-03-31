@@ -26,7 +26,7 @@ export function Breadcrumb({
         {segments.map((segment, index) => {
           const isLastItem = index === segments.length - 1
           return (
-            <li key={segment.href} className="flex items-center gap-2">
+            <li key={`${segment.href}-${index}`} className="flex items-center gap-2">
               {isLastItem ? (
                 <span
                   className={cn("font-medium", segment.active ? "text-foreground" : "text-muted-foreground")}

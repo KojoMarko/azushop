@@ -175,13 +175,13 @@ export default function ShopPage() {
             <div className="bg-muted/50 p-3 rounded-md mb-6">
               <div className="text-sm font-medium mb-2">Active Filters:</div>
               <div className="flex flex-wrap gap-2">
-                {activeFilters.categories.map((cat) => (
-                  <div key={cat} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                {activeFilters.categories.map((cat, index) => (
+                  <div key={`${cat}-${index}`} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                     Category: {cat}
                   </div>
                 ))}
-                {activeFilters.brands.map((brand) => (
-                  <div key={brand} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                {activeFilters.brands.map((brand, index) => (
+                  <div key={`${brand}-${index}`} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                     Brand: {brand}
                   </div>
                 ))}
